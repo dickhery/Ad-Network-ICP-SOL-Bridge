@@ -42,7 +42,7 @@ lazy_static! {
     };
 }
 const SERVICE_FEE: u64 = 10_000;     // 0.0001 ICP
-const SERVICE_FEE_SOL: u64 = 0; // Set to 0 as per JS
+const SERVICE_FEE_SOL: u64 = 0; // Set to 0 to match JS and avoid mismatches
 
 /* ----------------------------- SOL RPC TYPES ----------------------------- */
 
@@ -301,7 +301,7 @@ fn parse_required_cycles(err: &str) -> Option<u128> {
     if err.contains("TooFewCycles") {
         if let Some(start) = err.find("expected ") {
             let rest = &err[start + 9..];
-            let digits: String = rest.chars().filter(|c| c.is_ascii_digit()).collect();
+            let digits: String = rest.chars().take_while(|c| c.is_ascii_digit()).collect();
             if !digits.is_empty() {
                 if let Ok(v) = digits.parse::<u128>() {
                     return Some(v);
@@ -728,6 +728,7 @@ async fn transfer_ii(to: String, amount: u64) -> String {
                     let hash_hex = hex::encode(hash_bytes);
                     format!("Transfer successful: block {} hash {}", block_height, hash_hex)
                 }
+                // NOTE: no "failed" word in success path
                 _ => format!("Transfer successful: block {} (hash not available yet)", block_height),
             }
         }
@@ -744,7 +745,7 @@ async fn transfer_sol_ii(to: String, amount: u64) -> String {
     let subaccount = derive_subaccount(&sol_pk_str);
     let service_args = TransferArgs {
         memo: Memo(0),
-        amount: Tokens::from_e8s(SERVICE_FEE_SOL),  // Now 0
+        amount: Tokens::from_e8s(SERVICE_FEE_SOL),
         fee: DEFAULT_FEE,
         from_subaccount: Some(subaccount),
         to: *SERVICE_ACCOUNT,
@@ -1058,7 +1059,7 @@ async fn transfer_sol_from_service(to: String, amount: u64) -> String {
         Err(_) => return "Invalid blockhash".into(),
     };
 
-    let from_pk = [9u8, 101, 36, 24, 124, 204, 158, 180, 201, 1, 101, 28, 154, 229, 80, 89, 152, 200, 73, 225, 228, 199, 76, 119, 16, 110, 184, 176, 166, 154, 52, 254]; // Updated to a valid Ed25519 pubkey for service
+    let from_pk = get_user_sol_pk_for_path("adnet_service".as_bytes().to_vec()).await;
     let to_pk: [u8; 32] = match bs58::decode(&to).into_vec() {
         Ok(v) => match v.try_into() { Ok(a) => a, Err(_) => return "Invalid to address".into() },
         Err(_) => return "Invalid to address".into(),
