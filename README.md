@@ -1,6 +1,6 @@
-# Sol-ICP PoC: Solana Integration on the Internet Computer
+# Solana Integration on the Internet Computer
 
-This project is a proof-of-concept (PoC) demonstrating how canister smart contracts on the Internet Computer Protocol (ICP) can interact directly with the Solana blockchain. It leverages ICP's HTTPS outcalls for querying Solana JSON-RPC services and threshold Ed25519 cryptography for signing and submitting transactions to Solana.
+This project demonstrates how canister smart contracts on the Internet Computer Protocol (ICP) can interact directly with the Solana blockchain. It leverages ICP's HTTPS outcalls for querying Solana JSON-RPC services and threshold Ed25519 cryptography for signing and submitting transactions to Solana.
 
 Key features:
 - Query Solana blockchain data (e.g., balances, transactions) via the SOL RPC canister.
@@ -8,7 +8,7 @@ Key features:
 - Frontend for user interaction, built with modern web tools.
 - Backend canister handling Solana interactions.
 
-This PoC showcases chain fusion between ICP and Solana, enabling canisters to hold SOL assets, sign transactions, and more.
+This integration enables chain fusion between ICP and Solana, allowing canisters to hold SOL assets, sign transactions, and more.
 
 For more on the underlying technologies:
 - [Solana Integration on ICP](https://internetcomputer.org/docs/building-apps/chain-fusion/solana/overview)
